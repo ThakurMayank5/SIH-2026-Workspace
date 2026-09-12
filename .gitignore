@@ -2,6 +2,8 @@ dataset
 
 tempresults.txt
 
+archtemplate.txt
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
