@@ -1,0 +1,32 @@
+MODEL
+DS-CNN-Small
+
+INPUT
+16 kHz mono
+40 Mel bins
+49 time frames
+30 ms window
+20 ms hop
+
+PARAMETERS
+~5.3K
+
+TRAINING
+2946 training samples
+208 validation samples
+218 test samples
+
+TEST @ threshold 0.90
+Accuracy     97.71%
+Recall       97.30%
+Precision    98.18%
+F1           97.74%
+FPR          1.87%
+FNR          2.70%
+
+Confusion matrix
+
+                 Predicted
+                 Negative  Vaani
+Actual Negative     105      2
+Actual Vaani          3    108

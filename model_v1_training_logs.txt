@@ -1,0 +1,264 @@
+(.venv) PS C:\Users\Mayank Singh\Codes\SIH 2026> python .\model_v1\scripts\train_dscnn.py     
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1789294339.545093   39816 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1789294344.810712   39816 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+
+============================================================
+VAANI MODEL V1 — DS-CNN-SMALL
+============================================================
+============================================================
+LOADING DATA
+============================================================
+
+Raw shapes:
+Train:      (2946, 40, 49)
+Validation: (208, 40, 49)
+Test:       (218, 40, 49)
+
+Prepared shapes:
+Train:      (2946, 40, 49, 1)
+Validation: (208, 40, 49, 1)
+Test:       (218, 40, 49, 1)
+
+Value range:
+Train: 0.000 -> 1.000
+
+============================================================
+BUILDING MODEL
+============================================================
+I0000 00:00:1789294346.315746   39816 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: SSE3 SSE4.1 SSE4.2 AVX AVX2 AVX_VNNI FMA, in otheroperations, rebuild TensorFlow with the appropriate compiler flags.
+Model: "Vaani_DS_CNN_Small"
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┓
+┃ Layer (type)                         ┃ Output Shape                ┃         Param # ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━┩
+│ log_mel_input (InputLayer)           │ (None, 40, 49, 1)           │               0 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ initial_conv (Conv2D)                │ (None, 20, 25, 16)          │             144 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ initial_bn (BatchNormalization)      │ (None, 20, 25, 16)          │              64 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ initial_relu (ReLU)                  │ (None, 20, 25, 16)          │               0 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ ds_block_1_depthwise                 │ (None, 20, 25, 16)          │             144 │
+│ (DepthwiseConv2D)                    │                             │                 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ ds_block_1_dw_bn                     │ (None, 20, 25, 16)          │              64 │
+│ (BatchNormalization)                 │                             │                 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ ds_block_1_dw_relu (ReLU)            │ (None, 20, 25, 16)          │               0 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ ds_block_1_pointwise (Conv2D)        │ (None, 20, 25, 16)          │             256 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ ds_block_1_pw_bn                     │ (None, 20, 25, 16)          │              64 │
+│ (BatchNormalization)                 │                             │                 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ ds_block_1_pw_relu (ReLU)            │ (None, 20, 25, 16)          │               0 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ pool_1 (MaxPooling2D)                │ (None, 10, 12, 16)          │               0 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ ds_block_2_depthwise                 │ (None, 10, 12, 16)          │             144 │
+│ (DepthwiseConv2D)                    │                             │                 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ ds_block_2_dw_bn                     │ (None, 10, 12, 16)          │              64 │
+│ (BatchNormalization)                 │                             │                 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ ds_block_2_dw_relu (ReLU)            │ (None, 10, 12, 16)          │               0 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ ds_block_2_pointwise (Conv2D)        │ (None, 10, 12, 24)          │             384 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ ds_block_2_pw_bn                     │ (None, 10, 12, 24)          │              96 │
+│ (BatchNormalization)                 │                             │                 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ ds_block_2_pw_relu (ReLU)            │ (None, 10, 12, 24)          │               0 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ pool_2 (MaxPooling2D)                │ (None, 5, 6, 24)            │               0 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ ds_block_3_depthwise                 │ (None, 5, 6, 24)            │             216 │
+│ (DepthwiseConv2D)                    │                             │                 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ ds_block_3_dw_bn                     │ (None, 5, 6, 24)            │              96 │
+│ (BatchNormalization)                 │                             │                 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ ds_block_3_dw_relu (ReLU)            │ (None, 5, 6, 24)            │               0 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ ds_block_3_pointwise (Conv2D)        │ (None, 5, 6, 32)            │             768 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ ds_block_3_pw_bn                     │ (None, 5, 6, 32)            │             128 │
+│ (BatchNormalization)                 │                             │                 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ ds_block_3_pw_relu (ReLU)            │ (None, 5, 6, 32)            │               0 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ ds_block_4_depthwise                 │ (None, 5, 6, 32)            │             288 │
+│ (DepthwiseConv2D)                    │                             │                 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ ds_block_4_dw_bn                     │ (None, 5, 6, 32)            │             128 │
+│ (BatchNormalization)                 │                             │                 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ ds_block_4_dw_relu (ReLU)            │ (None, 5, 6, 32)            │               0 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ ds_block_4_pointwise (Conv2D)        │ (None, 5, 6, 32)            │           1,024 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ ds_block_4_pw_bn                     │ (None, 5, 6, 32)            │             128 │
+│ (BatchNormalization)                 │                             │                 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ ds_block_4_pw_relu (ReLU)            │ (None, 5, 6, 32)            │               0 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ global_average_pool                  │ (None, 32)                  │               0 │
+│ (GlobalAveragePooling2D)             │                             │                 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ dense (Dense)                        │ (None, 32)                  │           1,056 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ dropout (Dropout)                    │ (None, 32)                  │               0 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ classifier (Dense)                   │ (None, 2)                   │              66 │
+└──────────────────────────────────────┴─────────────────────────────┴─────────────────┘
+ Total params: 5,322 (20.79 KB)
+ Trainable params: 4,906 (19.16 KB)
+ Non-trainable params: 416 (1.62 KB)
+
+============================================================
+MODEL SIZE
+============================================================
+Trainable parameters:     4,906
+Non-trainable parameters: 418
+Total parameters:         5,324
+
+Approx FP32 weights: 20.80 KB
+
+Saved config: C:\Users\Mayank Singh\Codes\SIH 2026\model_v1\evaluation\model_config.json
+WARNING:tensorflow:TensorFlow GPU support is not available on native Windows for TensorFlow >= 2.11. Even if CUDA/cuDNN are installed, GPU will not be used. Please use WSL2 or the TensorFlow-DirectML plugin.
+
+============================================================
+TRAINING
+============================================================
+Epoch 1/50
+ 1/93 ━━━━━━━━━━━━━━━━━━━━ 4:34 3s/step - accuracy: 0.5625 - loss: 0. 6/93 ━━━━━━━━━━━━━━━━━━━━ 0s 11ms/step - accuracy: 0.5252 - loss: 0.11/93 ━━━━━━━━━━━━━━━━━━━━ 0s 11ms/step- accuracy: 0.5200 - loss: 0.16/93 ━━━━━━━━━━━━━━━━━━━━ 0s 11ms/step - accuracy: 0.5276 - loss: 0.21/93 ━━━━━━━━━━━━━━━━━━━━ 0s 11ms/step - accuracy: 0.5393 - loss: 0.27/93 ━━━━━━━━━━━━━━━━━━━━ 0s 10ms/step - accuracy: 0.5526 - loss: 0.33/93 ━━━━━━━━━━━━━━━━━━━━ 0s 10ms/step - accuracy: 0.5649 - loss: 0.39/93 ━━━━━━━━━━━━━━━━━━━━ 0s 10ms/step - accuracy: 0.5760 - loss: 0.46/93 ━━━━━━━━━━━━━━━━━━━━ 0s 10ms/step - accuracy: 0.5879 - loss: 0.52/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.5974 - loss: 0.659/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.6072 - loss: 0.666/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.6162 - loss: 0.673/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.6246 - loss: 0.680/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.6323 - loss: 0.687/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.6395 - loss: 0.693/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.6452 - loss: 0.6226
+Epoch 1: val_loss improved from None to 0.69592, saving model to C:\Users\Mayank Singh\Codes\SIH 2026\model_v1\checkpoints\best_model.keras
+93/93 ━━━━━━━━━━━━━━━━━━━━ 4s 12ms/step - accuracy: 0.7305 - loss: 0.5342 - val_accuracy: 0.4952 - val_loss: 0.6959 - learning_rate: 0.0010
+Epoch 2/50
+ 1/93 ━━━━━━━━━━━━━━━━━━━━ 2s 28ms/step - accuracy: 0.8750 - loss: 0. 8/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.8847 - loss: 0.315/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.8778 - loss: 0.322/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.8778 -loss: 0.329/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.8775 - loss: 0.336/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.8777 - loss: 0.343/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.8777 - loss: 0.350/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy:0.8772 - loss: 0.357/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.8770 - loss: 0.364/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.8766 - loss: 0.371/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.8768 - loss: 0.377/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.8773 - loss: 0.383/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.8780 - loss: 0.390/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.8789 - loss: 0.3174
+Epoch 2: val_loss did not improve from 0.69592
+93/93 ━━━━━━━━━━━━━━━━━━━━ 1s 8ms/step - accuracy: 0.8907 - loss: 0.2884 - val_accuracy:0.5048 - val_loss: 0.7550 - learning_rate: 0.0010
+Epoch 3/50
+ 1/93 ━━━━━━━━━━━━━━━━━━━━ 2s 27ms/step - accuracy: 0.9375 - loss: 0. 8/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9427 - loss: 0.115/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9230 - loss: 0.222/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9175 -loss: 0.228/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9158 - loss: 0.235/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9152 - loss: 0.242/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9148 - loss: 0.249/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy:0.9147 - loss: 0.256/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9149 - loss: 0.263/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9148 - loss: 0.270/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9149 - loss: 0.277/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9153 - loss: 0.284/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9160 - loss: 0.291/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9167 - loss: 0.2134
+Epoch 3: val_loss did not improve from 0.69592
+93/93 ━━━━━━━━━━━━━━━━━━━━ 1s 9ms/step - accuracy: 0.9246 - loss: 0.2015 - val_accuracy:0.5048 - val_loss: 1.0227 - learning_rate: 0.0010
+Epoch 4/50
+ 1/93 ━━━━━━━━━━━━━━━━━━━━ 3s 43ms/step - accuracy: 0.8750 - loss: 0. 7/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9246 - loss: 0.113/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9273 - loss: 0.119/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9280 -loss: 0.125/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9294 - loss: 0.131/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9308 - loss: 0.137/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9314 - loss: 0.143/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy:0.9322 - loss: 0.150/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9330 - loss: 0.157/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9337 - loss: 0.164/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9341 - loss: 0.171/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9347 - loss: 0.177/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9351 - loss: 0.183/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9357 - loss: 0.189/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9362 - loss: 0.1652
+Epoch 4: val_loss did not improve from 0.69592
+
+Epoch 4: ReduceLROnPlateau reducing learning rate to 0.0005000000237487257.
+93/93 ━━━━━━━━━━━━━━━━━━━━ 1s 9ms/step - accuracy: 0.9440 - loss: 0.1522 - val_accuracy:0.5048 - val_loss: 1.1820 - learning_rate: 0.0010
+Epoch 5/50
+ 1/93 ━━━━━━━━━━━━━━━━━━━━ 3s 33ms/step - accuracy: 0.9375 - loss: 0. 7/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9630 - loss: 0.113/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9572 - loss: 0.119/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9544 -loss: 0.125/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9540 - loss: 0.132/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9542 - loss: 0.139/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9541 - loss: 0.146/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy:0.9546 - loss: 0.152/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9550 - loss: 0.159/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9554 - loss: 0.166/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9556 - loss: 0.173/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9561 - loss: 0.179/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9564 - loss: 0.186/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9569 - loss: 0.193/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9575 - loss: 0.1162
+Epoch 5: val_loss did not improve from 0.69592
+93/93 ━━━━━━━━━━━━━━━━━━━━ 1s 9ms/step - accuracy: 0.9637 - loss: 0.1118 - val_accuracy:0.5433 - val_loss: 1.0093 - learning_rate: 5.0000e-04
+Epoch 6/50
+ 1/93 ━━━━━━━━━━━━━━━━━━━━ 2s 28ms/step - accuracy: 0.9688 - loss: 0. 7/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9669 - loss: 0.014/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9546 - loss: 0.021/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9519 -loss: 0.128/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9529 - loss: 0.135/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9538 - loss: 0.141/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9546 - loss: 0.147/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy:0.9557 - loss: 0.154/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9568 - loss: 0.161/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9576 - loss: 0.168/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9584 - loss: 0.175/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9592 - loss: 0.182/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9599 - loss: 0.188/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9605 - loss: 0.1072
+Epoch 6: val_loss improved from 0.69592 to 0.35170, saving model to C:\Users\Mayank Singh\Codes\SIH 2026\model_v1\checkpoints\best_model.keras
+93/93 ━━━━━━━━━━━━━━━━━━━━ 1s 9ms/step - accuracy: 0.9674 - loss: 0.1049 - val_accuracy:0.8510 - val_loss: 0.3517 - learning_rate: 5.0000e-04
+Epoch 7/50
+ 1/93 ━━━━━━━━━━━━━━━━━━━━ 2s 27ms/step - accuracy: 1.0000 - loss: 0. 8/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9863 - loss: 0.013/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9780 - loss: 0.019/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9724 -loss: 0.026/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9698 - loss: 0.032/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9689 - loss: 0.038/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9679 - loss: 0.045/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy:0.9676 - loss: 0.052/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9675 - loss: 0.058/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9672 - loss: 0.064/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9669 - loss: 0.071/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9670 - loss: 0.077/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9671 - loss: 0.084/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9672 - loss: 0.090/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9674 - loss: 0.0924
+Epoch 7: val_loss improved from 0.35170 to 0.14006, saving model to C:\Users\Mayank Singh\Codes\SIH 2026\model_v1\checkpoints\best_model.keras
+93/93 ━━━━━━━━━━━━━━━━━━━━ 1s 10ms/step - accuracy: 0.9688 - loss: 0.0915 - val_accuracy: 0.9519 - val_loss: 0.1401 - learning_rate: 5.0000e-04
+Epoch 8/50
+ 1/93 ━━━━━━━━━━━━━━━━━━━━ 2s 31ms/step - accuracy: 0.9688 - loss: 0. 7/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9772 - loss: 0.013/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9690 - loss: 0.019/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9666 -loss: 0.025/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9662 - loss: 0.031/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9663 - loss: 0.037/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9666 - loss: 0.044/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy:0.9675 - loss: 0.050/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9682 - loss: 0.056/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9688 - loss: 0.062/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9691 - loss: 0.068/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9696 - loss: 0.075/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9702 - loss: 0.081/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9706 - loss: 0.086/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9709 - loss: 0.091/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9712 - loss: 0.0737
+Epoch 8: val_loss improved from 0.14006 to 0.07652, saving model to C:\Users\Mayank Singh\Codes\SIH 2026\model_v1\checkpoints\best_model.keras
+93/93 ━━━━━━━━━━━━━━━━━━━━ 1s 11ms/step - accuracy: 0.9756 - loss: 0.0756 - val_accuracy: 0.9663 - val_loss: 0.0765 - learning_rate: 5.0000e-04
+Epoch 9/50
+ 1/93 ━━━━━━━━━━━━━━━━━━━━ 3s 38ms/step - accuracy: 0.9688 - loss: 0. 6/93 ━━━━━━━━━━━━━━━━━━━━ 0s 11ms/step - accuracy: 0.9864 - loss: 0.11/93 ━━━━━━━━━━━━━━━━━━━━ 0s 11ms/step- accuracy: 0.9847 - loss: 0.16/93 ━━━━━━━━━━━━━━━━━━━━ 0s 11ms/step - accuracy: 0.9818 - loss: 0.21/93 ━━━━━━━━━━━━━━━━━━━━ 0s 11ms/step - accuracy: 0.9803 - loss: 0.26/93 ━━━━━━━━━━━━━━━━━━━━ 0s 11ms/step - accuracy: 0.9799 - loss: 0.31/93 ━━━━━━━━━━━━━━━━━━━━ 0s 11ms/step - accuracy: 0.9793 - loss: 0.36/93 ━━━━━━━━━━━━━━━━━━━━ 0s 11ms/step - accuracy: 0.9788 - loss: 0.41/93 ━━━━━━━━━━━━━━━━━━━━ 0s 11ms/step - accuracy: 0.9787 - loss: 0.46/93 ━━━━━━━━━━━━━━━━━━━━ 0s 11ms/step - accuracy: 0.9787 - loss: 0.51/93 ━━━━━━━━━━━━━━━━━━━━ 0s 11ms/step - accuracy: 0.9786 - loss: 0.56/93 ━━━━━━━━━━━━━━━━━━━━ 0s 11ms/step -accuracy: 0.9785 - loss: 0.61/93 ━━━━━━━━━━━━━━━━━━━━ 0s 11ms/step - accuracy: 0.9784 - loss: 0.66/93 ━━━━━━━━━━━━━━━━━━━━ 0s 11ms/step - accuracy: 0.9784 - loss: 0.71/93 ━━━━━━━━━━━━━━━━━━━━ 0s 11ms/step - accuracy: 0.9785 - loss: 0.76/93 ━━━━━━━━━━━━━━━━━━━━ 0s 11ms/step - accuracy: 0.9785 - loss: 0.82/93 ━━━━━━━━━━━━━━━━━━━━ 0s 11ms/step - accuracy: 0.9786 - loss: 0.87/93 ━━━━━━━━━━━━━━━━━━━━ 0s 11ms/step - accuracy: 0.9787 - loss: 0.92/93 ━━━━━━━━━━━━━━━━━━━━ 0s 11ms/step - accuracy: 0.9788 - loss: 0.0626
+Epoch 9: val_loss did not improve from 0.07652
+93/93 ━━━━━━━━━━━━━━━━━━━━ 1s 12ms/step - accuracy: 0.9793 - loss: 0.0645 - val_accuracy: 0.9663 - val_loss: 0.0828 - learning_rate: 5.0000e-04
+Epoch 10/50
+ 1/93 ━━━━━━━━━━━━━━━━━━━━ 3s 34ms/step - accuracy: 0.9688 - loss: 0. 6/93 ━━━━━━━━━━━━━━━━━━━━ 0s 11ms/step - accuracy: 0.9786 - loss: 0.11/93 ━━━━━━━━━━━━━━━━━━━━ 0s 11ms/step- accuracy: 0.9765 - loss: 0.16/93 ━━━━━━━━━━━━━━━━━━━━ 0s 11ms/step - accuracy: 0.9763 - loss: 0.21/93 ━━━━━━━━━━━━━━━━━━━━ 0s 11ms/step - accuracy: 0.9767 - loss: 0.25/93 ━━━━━━━━━━━━━━━━━━━━ 0s 12ms/step - accuracy: 0.9772 - loss: 0.30/93 ━━━━━━━━━━━━━━━━━━━━ 0s 11ms/step - accuracy: 0.9774 - loss: 0.35/93 ━━━━━━━━━━━━━━━━━━━━ 0s 11ms/step - accuracy: 0.9776 - loss: 0.39/93 ━━━━━━━━━━━━━━━━━━━━ 0s 11ms/step - accuracy: 0.9778 - loss: 0.44/93 ━━━━━━━━━━━━━━━━━━━━ 0s 11ms/step - accuracy: 0.9783 - loss: 0.49/93 ━━━━━━━━━━━━━━━━━━━━ 0s 11ms/step - accuracy: 0.9787 - loss: 0.54/93 ━━━━━━━━━━━━━━━━━━━━ 0s 11ms/step -accuracy: 0.9790 - loss: 0.58/93 ━━━━━━━━━━━━━━━━━━━━ 0s 12ms/step - accuracy: 0.9791 - loss: 0.62/93 ━━━━━━━━━━━━━━━━━━━━ 0s 12ms/step - accuracy: 0.9793 - loss: 0.67/93 ━━━━━━━━━━━━━━━━━━━━ 0s 12ms/step - accuracy: 0.9795 - loss: 0.72/93 ━━━━━━━━━━━━━━━━━━━━ 0s 12ms/step - accuracy: 0.9797 - loss: 0.77/93 ━━━━━━━━━━━━━━━━━━━━ 0s 11ms/step - accuracy: 0.9800 - loss: 0.83/93 ━━━━━━━━━━━━━━━━━━━━ 0s 11ms/step - accuracy: 0.9803 - loss: 0.89/93 ━━━━━━━━━━━━━━━━━━━━ 0s 11ms/step - accuracy: 0.9805 - loss: 0.0580
+Epoch 10: val_loss improved from 0.07652 to 0.07542, saving model to C:\Users\Mayank Singh\Codes\SIH 2026\model_v1\checkpoints\best_model.keras
+93/93 ━━━━━━━━━━━━━━━━━━━━ 1s 13ms/step - accuracy: 0.9834 - loss: 0.0577 - val_accuracy: 0.9712 - val_loss: 0.0754 - learning_rate: 5.0000e-04
+Epoch 11/50
+ 1/93 ━━━━━━━━━━━━━━━━━━━━ 3s 36ms/step - accuracy: 0.9688 - loss: 0. 6/93 ━━━━━━━━━━━━━━━━━━━━ 0s 10ms/step - accuracy: 0.9782 - loss: 0.12/93 ━━━━━━━━━━━━━━━━━━━━ 0s 10ms/step- accuracy: 0.9772 - loss: 0.18/93 ━━━━━━━━━━━━━━━━━━━━ 0s 10ms/step - accuracy: 0.9773 - loss: 0.24/93 ━━━━━━━━━━━━━━━━━━━━ 0s 10ms/step - accuracy: 0.9782 - loss: 0.29/93 ━━━━━━━━━━━━━━━━━━━━ 0s 10ms/step - accuracy: 0.9789 - loss: 0.35/93 ━━━━━━━━━━━━━━━━━━━━ 0s 10ms/step - accuracy: 0.9795 - loss: 0.40/93 ━━━━━━━━━━━━━━━━━━━━ 0s 10ms/step - accuracy: 0.9800 - loss: 0.45/93 ━━━━━━━━━━━━━━━━━━━━ 0s 10ms/step - accuracy: 0.9806 - loss: 0.50/93 ━━━━━━━━━━━━━━━━━━━━ 0s 10ms/step - accuracy: 0.9811 - loss: 0.56/93 ━━━━━━━━━━━━━━━━━━━━ 0s 10ms/step - accuracy: 0.9817 - loss: 0.62/93 ━━━━━━━━━━━━━━━━━━━━ 0s 10ms/step -accuracy: 0.9820 - loss: 0.68/93 ━━━━━━━━━━━━━━━━━━━━ 0s 10ms/step - accuracy: 0.9824 - loss: 0.74/93 ━━━━━━━━━━━━━━━━━━━━ 0s 10ms/step - accuracy: 0.9829 - loss: 0.81/93 ━━━━━━━━━━━━━━━━━━━━ 0s 10ms/step - accuracy: 0.9833 - loss: 0.87/93 ━━━━━━━━━━━━━━━━━━━━ 0s 10ms/step - accuracy: 0.9837 - loss: 0.0492
+Epoch 11: val_loss improved from 0.07542 to 0.06299, saving model to C:\Users\Mayank Singh\Codes\SIH 2026\model_v1\checkpoints\best_model.keras
+93/93 ━━━━━━━━━━━━━━━━━━━━ 1s 11ms/step - accuracy: 0.9881 - loss: 0.0487 - val_accuracy: 0.9712 - val_loss: 0.0630 - learning_rate: 5.0000e-04
+Epoch 12/50
+ 1/93 ━━━━━━━━━━━━━━━━━━━━ 2s 26ms/step - accuracy: 0.9688 - loss: 0. 7/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9768 - loss: 0.013/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9748 - loss: 0.020/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9765 -loss: 0.027/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9787 - loss: 0.033/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9797 - loss: 0.040/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9805 - loss: 0.047/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy:0.9814 - loss: 0.054/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9821 - loss: 0.061/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9827 - loss: 0.067/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9831 - loss: 0.073/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9834 - loss: 0.079/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9838 - loss: 0.085/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9840 - loss: 0.092/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9843 - loss: 0.0421
+Epoch 12: val_loss did not improve from 0.06299
+93/93 ━━━━━━━━━━━━━━━━━━━━ 1s 9ms/step - accuracy: 0.9871 - loss: 0.0423 - val_accuracy:0.9712 - val_loss: 0.0714 - learning_rate: 5.0000e-04
+Epoch 13/50
+ 1/93 ━━━━━━━━━━━━━━━━━━━━ 2s 26ms/step - accuracy: 1.0000 - loss: 0. 7/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9937 - loss: 0.014/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9903 - loss: 0.021/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9886 -loss: 0.028/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9882 - loss: 0.034/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9882 - loss: 0.041/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9884 - loss: 0.048/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy:0.9887 - loss: 0.055/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9890 - loss: 0.062/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9893 - loss: 0.069/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9895 - loss: 0.076/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9898 - loss: 0.083/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9900 - loss: 0.090/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9902 - loss: 0.0328
+Epoch 13: val_loss improved from 0.06299 to 0.05682, saving model to C:\Users\Mayank Singh\Codes\SIH 2026\model_v1\checkpoints\best_model.keras
+93/93 ━━━━━━━━━━━━━━━━━━━━ 1s 9ms/step - accuracy: 0.9919 - loss: 0.0355 - val_accuracy:0.9712 - val_loss: 0.0568 - learning_rate: 5.0000e-04
+Epoch 14/50
+ 1/93 ━━━━━━━━━━━━━━━━━━━━ 2s 28ms/step - accuracy: 1.0000 - loss: 0. 8/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9932 - loss: 0.015/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9866 - loss: 0.022/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9860 -loss: 0.027/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9861 - loss: 0.034/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9864 - loss: 0.041/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9866 - loss: 0.048/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy:0.9871 - loss: 0.055/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9874 - loss: 0.062/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9877 - loss: 0.069/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9881 - loss: 0.076/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9884 - loss: 0.083/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9887 - loss: 0.090/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9889 - loss: 0.0358
+Epoch 14: val_loss did not improve from 0.05682
+93/93 ━━━━━━━━━━━━━━━━━━━━ 1s 9ms/step - accuracy: 0.9912 - loss: 0.0354 - val_accuracy:0.9760 - val_loss: 0.0582 - learning_rate: 5.0000e-04
+Epoch 15/50
+ 1/93 ━━━━━━━━━━━━━━━━━━━━ 2s 26ms/step - accuracy: 1.0000 - loss: 0. 8/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9965 - loss: 0.015/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9947 - loss: 0.022/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9940 -loss: 0.029/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9938 - loss: 0.036/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9939 - loss: 0.043/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9940 - loss: 0.050/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy:0.9941 - loss: 0.056/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9941 - loss: 0.063/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9941 - loss: 0.070/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9941 - loss: 0.076/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9941 - loss: 0.082/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9942 - loss: 0.088/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9942 - loss: 0.0268
+Epoch 15: val_loss did not improve from 0.05682
+93/93 ━━━━━━━━━━━━━━━━━━━━ 1s 9ms/step - accuracy: 0.9939 - loss: 0.0293 - val_accuracy:0.9760 - val_loss: 0.0665 - learning_rate: 5.0000e-04
+Epoch 16/50
+ 1/93 ━━━━━━━━━━━━━━━━━━━━ 2s 33ms/step - accuracy: 1.0000 - loss: 0. 7/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9986 - loss: 0.013/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9953 - loss: 0.020/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9950 -loss: 0.027/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9951 - loss: 0.034/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9953 - loss: 0.039/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9952 - loss: 0.045/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy:0.9951 - loss: 0.052/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9952 - loss: 0.059/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9951 - loss: 0.066/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9951 - loss: 0.073/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9952 - loss: 0.080/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9952 - loss: 0.087/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9953 - loss: 0.0270
+Epoch 16: val_loss did not improve from 0.05682
+
+Epoch 16: ReduceLROnPlateau reducing learning rate to 0.0002500000118743628.
+93/93 ━━━━━━━━━━━━━━━━━━━━ 1s 9ms/step - accuracy: 0.9946 - loss: 0.0280 - val_accuracy:0.9760 - val_loss: 0.0603 - learning_rate: 5.0000e-04
+Epoch 17/50
+ 1/93 ━━━━━━━━━━━━━━━━━━━━ 2s 26ms/step - accuracy: 1.0000 - loss: 0. 8/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 1.0000 - loss: 0.015/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9972 - loss: 0.022/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9960 -loss: 0.029/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9956 - loss: 0.036/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9953 - loss: 0.042/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9950 - loss: 0.048/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy:0.9948 - loss: 0.055/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9946 - loss: 0.062/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9945 - loss: 0.069/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9945 - loss: 0.076/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9945 - loss: 0.083/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9946 - loss: 0.089/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9947 - loss: 0.0227
+Epoch 17: val_loss did not improve from 0.05682
+93/93 ━━━━━━━━━━━━━━━━━━━━ 1s 9ms/step - accuracy: 0.9946 - loss: 0.0242 - val_accuracy:0.9712 - val_loss: 0.0756 - learning_rate: 2.5000e-04
+Epoch 18/50
+ 1/93 ━━━━━━━━━━━━━━━━━━━━ 2s 26ms/step - accuracy: 1.0000 - loss: 0. 8/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9983 - loss: 0.015/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9978 - loss: 0.022/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9980 -loss: 0.029/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9982 - loss: 0.035/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9981 - loss: 0.041/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9981 - loss: 0.048/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy:0.9980 - loss: 0.055/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9980 - loss: 0.062/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9979 - loss: 0.069/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9979 - loss: 0.076/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9979 - loss: 0.083/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9979 - loss: 0.090/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9979 - loss: 0.0156
+Epoch 18: val_loss did not improve from 0.05682
+93/93 ━━━━━━━━━━━━━━━━━━━━ 1s 9ms/step - accuracy: 0.9980 - loss: 0.0175 - val_accuracy:0.9760 - val_loss: 0.0725 - learning_rate: 2.5000e-04
+Epoch 19/50
+ 1/93 ━━━━━━━━━━━━━━━━━━━━ 2s 24ms/step - accuracy: 1.0000 - loss: 0. 8/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 1.0000 - loss: 0.015/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 1.0000 - loss: 0.022/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 1.0000 -loss: 0.029/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 1.0000 - loss: 0.036/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 1.0000 - loss: 0.043/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 1.0000 - loss: 0.050/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy:1.0000 - loss: 0.057/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 1.0000 - loss: 0.064/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 1.0000 - loss: 0.071/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 1.0000 - loss: 0.078/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 1.0000 - loss: 0.085/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 1.0000 - loss: 0.092/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 1.0000 - loss: 0.0119
+Epoch 19: val_loss did not improve from 0.05682
+
+Epoch 19: ReduceLROnPlateau reducing learning rate to 0.0001250000059371814.
+93/93 ━━━━━━━━━━━━━━━━━━━━ 1s 8ms/step - accuracy: 0.9997 - loss: 0.0139 - val_accuracy:0.9760 - val_loss: 0.0652 - learning_rate: 2.5000e-04
+Epoch 20/50
+ 1/93 ━━━━━━━━━━━━━━━━━━━━ 2s 26ms/step - accuracy: 1.0000 - loss: 0. 8/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 1.0000 - loss: 0.015/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 1.0000 - loss: 0.022/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 1.0000 -loss: 0.029/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 1.0000 - loss: 0.036/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 1.0000 - loss: 0.043/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9999 - loss: 0.050/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy:0.9998 - loss: 0.057/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9997 - loss: 0.064/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9997 - loss: 0.071/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9997 - loss: 0.078/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9997 - loss: 0.085/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9997 - loss: 0.091/93 ━━━━━━━━━━━━━━━━━━━━ 0s 8ms/step - accuracy: 0.9997 - loss: 0.0113
+Epoch 20: val_loss did not improve from 0.05682
+93/93 ━━━━━━━━━━━━━━━━━━━━ 1s 9ms/step - accuracy: 0.9993 - loss: 0.0125 - val_accuracy:0.9760 - val_loss: 0.0586 - learning_rate: 1.2500e-04
+Epoch 21/50
+ 1/93 ━━━━━━━━━━━━━━━━━━━━ 2s 28ms/step - accuracy: 1.0000 - loss: 0. 7/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 1.0000 - loss: 0.013/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step -87/93 ━━━━━━━━━━━━━━━━━━━━ 0s 9ms/step - accuracy: 0.9991 - loss: 0.0105 
+Epoch 21: val_loss did not improve from 0.05682
+93/93 ━━━━━━━━━━━━━━━━━━━━ 1s 10ms/step - accuracy: 0.9993 - loss: 0.0115 - val_accuracy: 0.9760 - val_loss: 0.0588 - learning_rate: 1.2500e-04
+Epoch 21: early stopping
+Restoring model weights from the end of the best epoch: 13.
+
+Saved final model:
+C:\Users\Mayank Singh\Codes\SIH 2026\model_v1\exports\vaani_dscnn_v1.keras
+
+============================================================
+TEST EVALUATION
+============================================================
+7/7 ━━━━━━━━━━━━━━━━━━━━ 0s 6ms/step - accuracy: 0.9679 - loss: 0.0869 
+
+Test loss:     0.086918
+Test accuracy: 0.9679
+
+Confusion matrix:
+
+                 Predicted
+                 Negative  Vaani
+Actual Negative       102      5
+Actual Vaani            2    109
+
+Metrics:
+Precision:          0.9561
+Recall / TPR:       0.9820
+F1 score:           0.9689
+False positive rate:0.0467
+False negative rate:0.0180
+
+Saved metrics: C:\Users\Mayank Singh\Codes\SIH 2026\model_v1\evaluation\test_metrics.json
+
+============================================================
+V1 TRAINING COMPLETE
+============================================================
+
+Best checkpoint:
+C:\Users\Mayank Singh\Codes\SIH 2026\model_v1\checkpoints\best_model.keras
+
+Final model:
+C:\Users\Mayank Singh\Codes\SIH 2026\model_v1\exports\vaani_dscnn_v1.keras

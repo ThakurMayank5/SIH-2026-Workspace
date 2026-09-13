@@ -1,0 +1,27 @@
+{
+    "model": "DS-CNN-Small",
+    "keyword": "Vaani",
+    "input": {
+        "sample_rate": 16000,
+        "window_ms": 30,
+        "hop_ms": 20,
+        "n_fft": 480,
+        "n_mels": 40,
+        "input_shape": [
+            40,
+            49,
+            1
+        ]
+    },
+    "classes": {
+        "0": "negative",
+        "1": "vaani"
+    },
+    "training": {
+        "batch_size": 32,
+        "epochs": 50,
+        "learning_rate": 0.001,
+        "seed": 42
+    },
+    "parameters": 5324
+}

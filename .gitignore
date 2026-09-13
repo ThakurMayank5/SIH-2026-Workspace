@@ -1,9 +1,19 @@
 dataset
+datasets
 
 tempresults.txt
 
 archtemplate.txt
 
+*.wav
+
+*.m4a
+
+*.mp3
+
+*.raw
+
+*.npz
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
