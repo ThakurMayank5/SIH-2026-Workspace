@@ -15,7 +15,7 @@ import tensorflow as tf
 MODEL_PATH = "model_v1/exports/vaani_dscnn_v1.keras"
 
 # Change this to your audio file
-AUDIO_PATH = "tests/audio.m4a"
+AUDIO_PATH = "tests/silence.m4a"
 
 THRESHOLD = 0.90
 

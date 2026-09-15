@@ -1,0 +1,243 @@
+(.venv) PS C:\Users\Mayank Singh\Codes\SIH 2026> python .\model_processing_v1\scripts\convert_keras_tflite_i8tflite_v2.py
+WARNING: All log messages before absl::InitializeLog() is called arewritten to STDERR
+I0000 00:00:1789487486.441410   26488 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders.To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+WARNING: All log messages before absl::InitializeLog() is called arewritten to STDERR
+I0000 00:00:1789487488.504974   26488 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders.To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+============================================================
+LOADING MODEL
+============================================================
+C:\Users\Mayank Singh\Codes\SIH 2026\model_v1\checkpoints\best_model.keras
+I0000 00:00:1789487490.193687   26488 cpu_feature_guard.cc:227] ThisTensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: SSE3 SSE4.1 SSE4.2 AVX AVX2 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING:tensorflow:TensorFlow GPU support is not available on nativeWindows for TensorFlow >= 2.11. Even if CUDA/cuDNN are installed, GPU will not be used. Please use WSL2 or the TensorFlow-DirectML plugin.
+Model: "Vaani_DS_CNN_Small"
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┓
+┃ Layer (type)               ┃ Output Shape        ┃    Param # ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━┩
+│ log_mel_input (InputLayer) │ (None, 40, 49, 1)   │          0 │
+├────────────────────────────┼─────────────────────┼────────────┤
+│ initial_conv (Conv2D)      │ (None, 20, 25, 16)  │        144 │
+├────────────────────────────┼─────────────────────┼────────────┤
+│ initial_bn                 │ (None, 20, 25, 16)  │         64 │
+│ (BatchNormalization)       │                     │            │
+├────────────────────────────┼─────────────────────┼────────────┤
+│ initial_relu (ReLU)        │ (None, 20, 25, 16)  │          0 │
+├────────────────────────────┼─────────────────────┼────────────┤
+│ ds_block_1_depthwise       │ (None, 20, 25, 16)  │        144 │
+│ (DepthwiseConv2D)          │                     │            │
+├────────────────────────────┼─────────────────────┼────────────┤
+│ ds_block_1_dw_bn           │ (None, 20, 25, 16)  │         64 │
+│ (BatchNormalization)       │                     │            │
+├────────────────────────────┼─────────────────────┼────────────┤
+│ ds_block_1_dw_relu (ReLU)  │ (None, 20, 25, 16)  │          0 │
+├────────────────────────────┼─────────────────────┼────────────┤
+│ ds_block_1_pointwise       │ (None, 20, 25, 16)  │        256 │
+│ (Conv2D)                   │                     │            │
+├────────────────────────────┼─────────────────────┼────────────┤
+│ ds_block_1_pw_bn           │ (None, 20, 25, 16)  │         64 │
+│ (BatchNormalization)       │                     │            │
+├────────────────────────────┼─────────────────────┼────────────┤
+│ ds_block_1_pw_relu (ReLU)  │ (None, 20, 25, 16)  │          0 │
+├────────────────────────────┼─────────────────────┼────────────┤
+│ pool_1 (MaxPooling2D)      │ (None, 10, 12, 16)  │          0 │
+├────────────────────────────┼─────────────────────┼────────────┤
+│ ds_block_2_depthwise       │ (None, 10, 12, 16)  │        144 │
+│ (DepthwiseConv2D)          │                     │            │
+├────────────────────────────┼─────────────────────┼────────────┤
+│ ds_block_2_dw_bn           │ (None, 10, 12, 16)  │         64 │
+│ (BatchNormalization)       │                     │            │
+├────────────────────────────┼─────────────────────┼────────────┤
+│ ds_block_2_dw_relu (ReLU)  │ (None, 10, 12, 16)  │          0 │
+├────────────────────────────┼─────────────────────┼────────────┤
+│ ds_block_2_pointwise       │ (None, 10, 12, 24)  │        384 │
+│ (Conv2D)                   │                     │            │
+├────────────────────────────┼─────────────────────┼────────────┤
+│ ds_block_2_pw_bn           │ (None, 10, 12, 24)  │         96 │
+│ (BatchNormalization)       │                     │            │
+├────────────────────────────┼─────────────────────┼────────────┤
+│ ds_block_2_pw_relu (ReLU)  │ (None, 10, 12, 24)  │          0 │
+├────────────────────────────┼─────────────────────┼────────────┤
+│ pool_2 (MaxPooling2D)      │ (None, 5, 6, 24)    │          0 │
+├────────────────────────────┼─────────────────────┼────────────┤
+│ ds_block_3_depthwise       │ (None, 5, 6, 24)    │        216 │
+│ (DepthwiseConv2D)          │                     │            │
+├────────────────────────────┼─────────────────────┼────────────┤
+│ ds_block_3_dw_bn           │ (None, 5, 6, 24)    │         96 │
+│ (BatchNormalization)       │                     │            │
+├────────────────────────────┼─────────────────────┼────────────┤
+│ ds_block_3_dw_relu (ReLU)  │ (None, 5, 6, 24)    │          0 │
+├────────────────────────────┼─────────────────────┼────────────┤
+│ ds_block_3_pointwise       │ (None, 5, 6, 32)    │        768 │
+│ (Conv2D)                   │                     │            │
+├────────────────────────────┼─────────────────────┼────────────┤
+│ ds_block_3_pw_bn           │ (None, 5, 6, 32)    │        128 │
+│ (BatchNormalization)       │                     │            │
+├────────────────────────────┼─────────────────────┼────────────┤
+│ ds_block_3_pw_relu (ReLU)  │ (None, 5, 6, 32)    │          0 │
+├────────────────────────────┼─────────────────────┼────────────┤
+│ ds_block_4_depthwise       │ (None, 5, 6, 32)    │        288 │
+│ (DepthwiseConv2D)          │                     │            │
+├────────────────────────────┼─────────────────────┼────────────┤
+│ ds_block_4_dw_bn           │ (None, 5, 6, 32)    │        128 │
+│ (BatchNormalization)       │                     │            │
+├────────────────────────────┼─────────────────────┼────────────┤
+│ ds_block_4_dw_relu (ReLU)  │ (None, 5, 6, 32)    │          0 │
+├────────────────────────────┼─────────────────────┼────────────┤
+│ ds_block_4_pointwise       │ (None, 5, 6, 32)    │      1,024 │
+│ (Conv2D)                   │                     │            │
+├────────────────────────────┼─────────────────────┼────────────┤
+│ ds_block_4_pw_bn           │ (None, 5, 6, 32)    │        128 │
+│ (BatchNormalization)       │                     │            │
+├────────────────────────────┼─────────────────────┼────────────┤
+│ ds_block_4_pw_relu (ReLU)  │ (None, 5, 6, 32)    │          0 │
+├────────────────────────────┼─────────────────────┼────────────┤
+│ global_average_pool        │ (None, 32)          │          0 │
+│ (GlobalAveragePooling2D)   │                     │            │
+├────────────────────────────┼─────────────────────┼────────────┤
+│ dense (Dense)              │ (None, 32)          │      1,056 │
+├────────────────────────────┼─────────────────────┼────────────┤
+│ dropout (Dropout)          │ (None, 32)          │          0 │
+├────────────────────────────┼─────────────────────┼────────────┤
+│ classifier (Dense)         │ (None, 2)           │         66 │
+└────────────────────────────┴─────────────────────┴────────────┘
+ Total params: 15,136 (59.13 KB)
+ Trainable params: 4,906 (19.16 KB)
+ Non-trainable params: 416 (1.62 KB)
+ Optimizer params: 9,814 (38.34 KB)
+
+============================================================
+LOADING REPRESENTATIVE DATA
+============================================================
+Original shape: (2946, 40, 49)
+Prepared shape: (2946, 40, 49, 1)
+Value range: 0.0 -> 1.0
+
+============================================================
+CONVERTING TO INT8 TFLITE
+============================================================
+Saved artifact at 'C:\Users\MAYANK~1\AppData\Local\Temp\tmp_x3z1q9t'. The following endpoints are available:
+
+* Endpoint 'serve'
+  args_0 (POSITIONAL_ONLY): TensorSpec(shape=(None, 40, 49, 1), dtype=tf.float32, name='log_mel_input')
+Output Type:
+  TensorSpec(shape=(None, 2), dtype=tf.float32, name=None)
+Captures:
+  1545696464384: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545696475472: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717269072: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545696470896: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545696473184: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545696474944: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717275232: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717278576: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717275056: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717277344: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717280864: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717282448: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717281216: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717284032: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717283504: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717273824: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717356800: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717360144: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717356624: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717358912: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717362608: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717364192: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717362432: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717365776: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717365952: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545696476880: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717406480: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717409472: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717405776: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717407360: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717411936: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717413520: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717411760: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717415104: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717531216: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717534384: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717535616: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717539488: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717536144: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717538256: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717541952: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717543184: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717541776: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717543712: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717545824: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717542832: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717618064: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717621408: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  1545717622112: TensorSpec(shape=(), dtype=tf.resource, name=None)
+C:\Users\Mayank Singh\Codes\SIH 2026\.venv\lib\site-packages\tensorflow\lite\python\convert.py:846: UserWarning: Statistics for quantizedinputs were expected, but not specified; continuing anyway.
+  warnings.warn(
+W0000 00:00:1789487491.737141   26488 tf_tfl_flatbuffer_helpers.cc:364] Ignored output_format.
+W0000 00:00:1789487491.737430   26488 tf_tfl_flatbuffer_helpers.cc:367] Ignored drop_control_dependency.
+I0000 00:00:1789487491.740683   26488 reader.cc:83] Reading SavedModel from: C:\Users\MAYANK~1\AppData\Local\Temp\tmp_x3z1q9t
+I0000 00:00:1789487491.744861   26488 reader.cc:52] Reading meta graph with tags { serve }
+I0000 00:00:1789487491.745000   26488 reader.cc:147] Reading SavedModel debug info (if present) from: C:\Users\MAYANK~1\AppData\Local\Temp\tmp_x3z1q9t
+I0000 00:00:1789487491.769033   26488 mlir_graph_optimization_pass.cc:437] MLIR V1 optimization pass is not enabled
+I0000 00:00:1789487491.773818   26488 loader.cc:236] Restoring SavedModel bundle.
+I0000 00:00:1789487492.023285   26488 loader.cc:220] Running initialization op on SavedModel bundle at path: C:\Users\MAYANK~1\AppData\Local\Temp\tmp_x3z1q9t
+I0000 00:00:1789487492.069199   26488 loader.cc:471] SavedModel loadfor tags { serve }; Status: success: OK. Took 328737 microseconds.
+I0000 00:00:1789487492.148194   26488 dump_mlir_util.cc:269] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+fully_quantize: 0, inference_type: 6, input_inference_type: INT8, output_inference_type: INT8
+W0000 00:00:1789487492.559081   26488 flatbuffer_export.cc:3851] Skipping runtime version metadata in the model. This will be generated by the exporter.
+
+============================================================
+CONVERSION COMPLETE
+============================================================
+
+Output:
+C:\Users\Mayank Singh\Codes\SIH 2026\model_v1\exports\vaani_dscnn_v1_int8.tflite
+
+Model size: 23,248 bytes (22.70 KB)
+
+============================================================
+TENSOR INFORMATION
+============================================================
+C:\Users\Mayank Singh\Codes\SIH 2026\.venv\lib\site-packages\tensorflow\lite\python\interpreter.py:457: UserWarning:     Warning: tf.lite.Interpreter is deprecated and is scheduled for deletion in
+    TF 2.20. Please use the LiteRT interpreter from the ai_edge_litert package.
+    See the [migration guide](https://ai.google.dev/edge/litert/migration)
+    for details.
+    
+  warnings.warn(_INTERPRETER_DELETION_WARNING)
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+
+INPUT
+shape: [ 1 40 49  1]
+dtype: <class 'numpy.int8'>
+quantization: (0.003921568859368563, -128)
+
+OUTPUT
+shape: [1 2]
+dtype: <class 'numpy.int8'>
+quantization: (0.00390625, -128)
+
+Saved quantization params: C:\Users\Mayank Singh\Codes\SIH 2026\model_v1\exports\vaani_dscnn_v1_int8_quant_params.json
+
+============================================================
+POST-QUANTIZATION TEST EVALUATION
+============================================================
+
+Decision threshold:  0.9
+INT8 test accuracy:  0.9725
+INT8 precision:      0.9730
+INT8 recall:         0.9730
+INT8 F1:             0.9730
+
+Confusion matrix (INT8 model):
+
+                 Predicted
+                 Negative  Vaani
+Actual Negative       104      3
+Actual Vaani            3    108
+
+Saved INT8 test metrics: C:\Users\Mayank Singh\Codes\SIH 2026\model_v1\exports\vaani_dscnn_v1_int8_test_metrics.json
+
+============================================================
+DONE
+============================================================
+(.venv) PS C:\Users\Mayank Singh\Codes\SIH 2026> 
