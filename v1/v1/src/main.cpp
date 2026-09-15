@@ -1,223 +1,302 @@
-/*
- * ESP32-S3 + INMP441
- * HTTP POST audio chunks
- */
+#include <Arduino.h>
 
-#include <driver/i2s.h>
-#include <WiFi.h>
-#include <HTTPClient.h>
+#include "model_data.h"
 
-// -------------------- WiFi --------------------
+#include "tensorflow/lite/micro/micro_interpreter.h"
+#include "tensorflow/lite/micro/micro_mutable_op_resolver.h"
+#include "tensorflow/lite/schema/schema_generated.h"
 
-const char *ssid = "ThakurMayank";
-const char *password = "2c47G4=1";
-
-// -------------------- Server --------------------
-
-const char *serverURL = "http://10.104.200.44:8000/audio";
-
-// -------------------- I2S --------------------
-
-#define I2S_SD 33
-#define I2S_WS 25
-#define I2S_SCK 26
-#define I2S_PORT I2S_NUM_0
-
-// -------------------- Audio --------------------
-
-#define SAMPLE_RATE 16000
-#define bufferLen 1024
-
-int32_t audioBuffer[bufferLen];
-
-// -------------------- Function Prototypes --------------------
-
-void connectWiFi();
-void i2s_install();
-void i2s_setpin();
-void micTask(void *parameter);
 
 // ============================================================
-// SETUP
+// Model
 // ============================================================
 
-void setup()
-{
-  Serial.begin(115200);
-  delay(1000);
+const tflite::Model* model = nullptr;
+tflite::MicroInterpreter* interpreter = nullptr;
 
-  Serial.println();
-  Serial.println("ESP32-S3 INMP441 HTTP Audio");
+TfLiteTensor* input = nullptr;
+TfLiteTensor* output = nullptr;
 
-  connectWiFi();
-
-  xTaskCreatePinnedToCore(
-      micTask,
-      "micTask",
-      10000,
-      NULL,
-      1,
-      NULL,
-      1);
-}
 
 // ============================================================
-// LOOP
+// Tensor arena
 // ============================================================
 
-void loop()
-{
-  delay(100);
-}
+// Start deliberately large.
+// We will measure the actual requirement later.
+constexpr size_t kTensorArenaSize = 64 * 1024;
+
+alignas(16) uint8_t tensor_arena[kTensorArenaSize];
+
 
 // ============================================================
-// WIFI
+// Setup
 // ============================================================
 
-void connectWiFi()
-{
-  WiFi.begin(ssid, password);
+void setup() {
 
-  Serial.print("Connecting to WiFi");
+    Serial.begin(115200);
+    delay(1000);
 
-  while (WiFi.status() != WL_CONNECTED)
-  {
-    delay(500);
-    Serial.print(".");
-  }
+    Serial.println();
+    Serial.println("====================================");
+    Serial.println("      VAANI TFLITE MICRO TEST");
+    Serial.println("====================================");
 
-  Serial.println();
-  Serial.println("WiFi connected");
+    Serial.printf("Model size: %u bytes\n",
+                  g_vaani_model_data_len);
 
-  Serial.print("ESP32 IP: ");
-  Serial.println(WiFi.localIP());
-}
+    Serial.printf("Tensor arena: %u bytes\n",
+                  kTensorArenaSize);
 
-// ============================================================
-// I2S CONFIGURATION
-// ============================================================
 
-void i2s_install()
-{
-  // const i2s_config_t i2s_config =
-  //     {
-  //         .mode = (i2s_mode_t)(I2S_MODE_MASTER |
-  //                              I2S_MODE_RX),
+    // --------------------------------------------------------
+    // Load model
+    // --------------------------------------------------------
 
-  //         .sample_rate = SAMPLE_RATE,
+    model = tflite::GetModel(g_vaani_model_data);
 
-  //         .bits_per_sample = I2S_BITS_PER_SAMPLE_32BIT,
-
-  //         .channel_format = I2S_CHANNEL_FMT_ONLY_RIGHT,
-
-  //         .communication_format = I2S_COMM_FORMAT_I2S,
-
-  //         .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,
-
-  //         .dma_buf_count = 8,
-
-  //         .dma_buf_len = 256,
-
-  //         .use_apll = false,
-
-  //         .tx_desc_auto_clear = false,
-
-  //         .fixed_mclk = 0};
-
-  const i2s_config_t i2s_config = {
-      .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_RX),
-      .sample_rate = 44100,
-      .bits_per_sample = I2S_BITS_PER_SAMPLE_32BIT,
-      .channel_format = I2S_CHANNEL_FMT_ONLY_RIGHT,
-      .communication_format = I2S_COMM_FORMAT_I2S,
-      .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,
-      .dma_buf_count = 8,
-      .dma_buf_len = 256,
-      .use_apll = false,
-  };
-
-  i2s_driver_install(
-      I2S_PORT,
-      &i2s_config,
-      0,
-      NULL);
-}
-
-// ============================================================
-// I2S PINS
-// ============================================================
-
-void i2s_setpin()
-{
-  const i2s_pin_config_t pin_config =
-      {
-          .bck_io_num = I2S_SCK,
-          .ws_io_num = I2S_WS,
-          .data_out_num = I2S_PIN_NO_CHANGE,
-          .data_in_num = I2S_SD};
-
-  i2s_set_pin(
-      I2S_PORT,
-      &pin_config);
-}
-
-// ============================================================
-// MICROPHONE TASK
-// ============================================================
-
-void micTask(void *parameter)
-{
-  // Initialize I2S
-  i2s_install();
-  i2s_setpin();
-
-  i2s_start(I2S_PORT);
-
-  Serial.println("I2S microphone started");
-  Serial.println("Starting HTTP audio transmission...");
-
-  size_t bytesIn = 0;
-
-  while (true)
-  {
-    // Read audio from INMP441
-    esp_err_t result = i2s_read(
-        I2S_PORT,
-        audioBuffer,
-        bufferLen * sizeof(int32_t),
-        &bytesIn,
-        portMAX_DELAY);
-
-    if (result == ESP_OK && bytesIn > 0)
-    {
-      // Check WiFi
-      if (WiFi.status() != WL_CONNECTED)
-      {
-        Serial.println("WiFi disconnected!");
-        continue;
-      }
-
-      // Create HTTP client
-      HTTPClient http;
-
-      http.begin(serverURL);
-
-      // Raw binary audio
-      http.addHeader(
-          "Content-Type",
-          "application/octet-stream");
-
-      // Send audio chunk
-      int httpResponseCode = http.POST(
-          (uint8_t *)audioBuffer,
-          bytesIn);
-
-      Serial.print("Sent ");
-      Serial.print(bytesIn);
-      Serial.print(" bytes | HTTP response: ");
-      Serial.println(httpResponseCode);
-
-      http.end();
+    if (model == nullptr) {
+        Serial.println("ERROR: Could not load model");
+        return;
     }
-  }
+
+    Serial.println("Model loaded");
+
+
+    // Check model schema version
+    if (model->version() != TFLITE_SCHEMA_VERSION) {
+
+        Serial.printf(
+            "ERROR: Model schema %d != runtime schema %d\n",
+            model->version(),
+            TFLITE_SCHEMA_VERSION
+        );
+
+        return;
+    }
+
+    Serial.println("Model schema OK");
+
+
+    // --------------------------------------------------------
+    // Register ONLY the operators our model uses
+    // --------------------------------------------------------
+
+    static tflite::MicroMutableOpResolver<6> resolver;
+
+    if (resolver.AddConv2D() != kTfLiteOk) {
+        Serial.println("ERROR: AddConv2D failed");
+        return;
+    }
+
+    if (resolver.AddDepthwiseConv2D() != kTfLiteOk) {
+        Serial.println("ERROR: AddDepthwiseConv2D failed");
+        return;
+    }
+
+    if (resolver.AddMaxPool2D() != kTfLiteOk) {
+        Serial.println("ERROR: AddMaxPool2D failed");
+        return;
+    }
+
+    if (resolver.AddMean() != kTfLiteOk) {
+        Serial.println("ERROR: AddMean failed");
+        return;
+    }
+
+    if (resolver.AddFullyConnected() != kTfLiteOk) {
+        Serial.println("ERROR: AddFullyConnected failed");
+        return;
+    }
+
+    if (resolver.AddSoftmax() != kTfLiteOk) {
+        Serial.println("ERROR: AddSoftmax failed");
+        return;
+    }
+
+    Serial.println("Operators registered");
+
+
+    // --------------------------------------------------------
+    // Create interpreter
+    // --------------------------------------------------------
+
+    static tflite::MicroInterpreter static_interpreter(
+        model,
+        resolver,
+        tensor_arena,
+        kTensorArenaSize
+    );
+
+    interpreter = &static_interpreter;
+
+
+    // --------------------------------------------------------
+    // Allocate tensors
+    // --------------------------------------------------------
+
+    TfLiteStatus status = interpreter->AllocateTensors();
+
+    if (status != kTfLiteOk) {
+        Serial.println("ERROR: AllocateTensors() failed");
+        return;
+    }
+
+    Serial.println("Tensor allocation OK");
+
+
+    // --------------------------------------------------------
+    // Get input/output tensors
+    // --------------------------------------------------------
+
+    input = interpreter->input(0);
+    output = interpreter->output(0);
+
+    if (input == nullptr || output == nullptr) {
+        Serial.println("ERROR: Input/output tensor missing");
+        return;
+    }
+
+
+    // --------------------------------------------------------
+    // Print tensor information
+    // --------------------------------------------------------
+
+    Serial.println();
+    Serial.println("------------- INPUT -------------");
+
+    Serial.printf(
+        "Type: %d\n",
+        input->type
+    );
+
+    Serial.printf(
+        "Shape: %d x %d x %d x %d\n",
+        input->dims->data[0],
+        input->dims->data[1],
+        input->dims->data[2],
+        input->dims->data[3]
+    );
+
+    Serial.printf(
+        "Scale: %.10f\n",
+        input->params.scale
+    );
+
+    Serial.printf(
+        "Zero point: %d\n",
+        input->params.zero_point
+    );
+
+
+    Serial.println();
+    Serial.println("------------- OUTPUT ------------");
+
+    Serial.printf(
+        "Type: %d\n",
+        output->type
+    );
+
+    Serial.printf(
+        "Scale: %.10f\n",
+        output->params.scale
+    );
+
+    Serial.printf(
+        "Zero point: %d\n",
+        output->params.zero_point
+    );
+
+
+    // --------------------------------------------------------
+    // Fill test input
+    // --------------------------------------------------------
+
+    // For now we use zero input.
+    // This is NOT an actual audio test yet.
+
+    const size_t input_elements =
+        input->bytes;
+
+    memset(input->data.int8, 0, input_elements);
+
+
+    // --------------------------------------------------------
+    // Run inference
+    // --------------------------------------------------------
+
+    Serial.println();
+    Serial.println("Running inference...");
+
+    uint32_t start_us = micros();
+
+    status = interpreter->Invoke();
+
+    uint32_t elapsed_us = micros() - start_us;
+
+
+    if (status != kTfLiteOk) {
+        Serial.println("ERROR: Invoke() failed");
+        return;
+    }
+
+
+    // --------------------------------------------------------
+    // Print results
+    // --------------------------------------------------------
+
+    Serial.println("Inference OK");
+
+    Serial.printf(
+        "Inference time: %lu us\n",
+        elapsed_us
+    );
+
+    Serial.printf(
+        "Inference time: %.3f ms\n",
+        elapsed_us / 1000.0f
+    );
+
+
+    // Output is INT8.
+    // Dequantize:
+    //
+    // real_value =
+    //      (quantized_value - zero_point) * scale
+    //
+
+    float output0 =
+        (output->data.int8[0] - output->params.zero_point)
+        * output->params.scale;
+
+    float output1 =
+        (output->data.int8[1] - output->params.zero_point)
+        * output->params.scale;
+
+
+    Serial.println();
+    Serial.println("------------- OUTPUT ------------");
+
+    Serial.printf(
+        "Class 0: %.6f\n",
+        output0
+    );
+
+    Serial.printf(
+        "Class 1: %.6f\n",
+        output1
+    );
+
+
+    Serial.println();
+    Serial.println("====================================");
+    Serial.println("       TFLITE TEST COMPLETE");
+    Serial.println("====================================");
+}
+
+
+void loop() {
+
+    delay(2000);
 }
