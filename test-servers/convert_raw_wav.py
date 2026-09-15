@@ -12,12 +12,8 @@ samples = np.fromfile(input_file, dtype=np.int32)
 print("Samples:", len(samples))
 print("Duration:", len(samples) / SAMPLE_RATE, "seconds")
 
-# INMP441 data is typically 24-bit data inside a 32-bit I2S word.
-# Shift it down to get usable audio.
-samples = samples >> 8
-
-# Convert 24-bit-ish values to signed 16-bit PCM
-samples = np.clip(samples, -32768, 32767).astype(np.int16)
+samples = np.fromfile(input_file, dtype=np.int32)
+samples = (samples >> 16).astype(np.int16)   # shift by 16, not 8 — no clipping needed
 
 # Write WAV
 with wave.open(output_file, "wb") as wav:
